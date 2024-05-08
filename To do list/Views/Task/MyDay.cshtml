@@ -1,0 +1,191 @@
+﻿@using Models.Enum
+@using Models.MyModels
+@using Services
+@model IEnumerable<Models.MyModels.MyTask>
+
+@{
+    List<MyTask> remain_list = new List<MyTask>();
+    List<MyTask> deleted_list = new List<MyTask>();
+
+    foreach (var num in Model)
+    {
+        if (num.IsCompleted == true)
+        {
+            deleted_list.Add(num);
+        }
+
+        if (num.IsCompleted == false)
+        {
+            remain_list.Add(num);
+        }
+    }
+
+    MyTask myTask = new MyTask();
+}
+
+<div id="Window_for_add" class="Model_window" hidden>
+    <form method="post" asp-action="AddTaskToMyDay" asp-controller="Task">
+        <div>
+            <label asp-for="@myTask.Name">Name of task</label>
+            <span asp-validation-for="@myTask.Name" id="error_name"></span>
+            <div>
+                <input type="text" asp-for="@myTask.Name" />
+            </div>
+        </div>
+
+        <div>
+            <label asp-for="@myTask.Description">Description</label>
+            <span asp-validation-for="@myTask.Description" id="error_description"></span>
+            <div>
+                <input type="text" asp-for="@myTask.Description" value="" />
+            </div>
+        </div>
+
+        @{
+            string[] types = (string[])Enum.GetNames(typeof(TaskTypes));
+        }
+        <div>
+            <label asp-for="@myTask.Type">Type</label>
+            <span asp-validation-for="@myTask.Type" id="error_type"> </span>
+            <div>
+                <select asp-for="@myTask.Type">
+                    @foreach (var num in types)
+                    {
+                        <option value="@num" name="type">@num</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        @* <div>
+            <label asp-for="@myTask.Priority">Priority</label>
+            <span asp-validation-for="@myTask.Priority" id="error_priority"></span>
+            <div>
+                <input type="number" asp-for="@myTask.Priority" value="" />
+            </div>
+        </div> *@
+
+        <div>
+            <button type="submit">Add</button>
+            <button type="button" onclick="Cancel()">Cancel</button>
+        </div>
+    </form>
+</div>
+
+
+<div class="add_task_div">
+    <a class="add_task_link" onclick="AddTask(); return false;"><img src="~/add.png" alt="Plus" />Додати завдання</a>
+    <button onclick="open_select_date(); return false;">Вибрати дату</button>
+</div>
+<div class="Model_window" id="date_window" hidden>
+    <form method="post" asp-action="MyDay" asp-controller="Task">
+        <input name="date_time" type="date">
+        <button type="submit">Ok</button>
+        <button type="button" onclick="Cancel()">Cancel</button>
+    </form>
+</div>
+
+
+<script>
+    function open_select_date() {
+        console.log("1!!");
+        let open = document.getElementById("date_window");
+        open.style.display = "block";
+        console.log("222");
+    }
+
+
+    // function sendDataToController(selectedDate) {
+    //     // Створюємо об'єкт дати
+    //     var currentDate = new Date();
+
+    //     // Створюємо об'єкт запиту
+    //     var xhr = new XMLHttpRequest();
+
+    //     // Встановлюємо метод та URL запиту
+    //     xhr.open("POST", "/MyDay", true);
+
+    //     // Встановлюємо заголовок Content-Type для POST-запиту
+    //     xhr.setRequestHeader("Content-Type", "application/json");
+
+    //     // Відправляємо дані
+    //     xhr.send(JSON.stringify(selectedDate));
+
+    //     // Встановлюємо обробник події завершення запиту
+    //     xhr.onload = function () {
+    //         if (xhr.status >= 200 && xhr.status < 300) {
+    //             // Обробляємо успішну відповідь від сервера
+    //             console.log("Дані успішно відправлені на сервер:", xhr.responseText);
+    //         } else {
+    //             // Обробляємо помилку
+    //             console.error("Помилка при відправленні даних на сервер:", xhr.status);
+    //         }
+    //     };
+    // }
+
+
+    const inputDate = document.getElementById('select_date');
+    inputDate.addEventListener('change', function () {
+        const selectedDate = inputDate.value;
+        //sendData(selectedDate);
+        
+        const body = {
+             my_date: selectedDate
+        }
+        // let url = "http://localhost:5237/TaskController/Delete";
+        // sendRequest("POST", url, body);
+      //  sendDataToController(selectedDate);
+        console.log(selectedDate);
+    });
+</script>
+
+<div id="remain_tasks" style="margin-left: 5px">Потрібно виконати</div>
+
+<div class="source">
+    @foreach (var num in remain_list)
+    {
+        <div class="task_div" id="task_div_@num">
+            <input value="@num.Id" hidden>
+            <input type="checkbox" class="task_ch" id="done_@num.Id" onclick="checkTask(@num.Id, 2)" />
+            <input type="type" name="name" value="@num.Name" class="task" id="text_@num.Id" readonly disabled />
+        </div>
+    }
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const moveCheckboxes = document.querySelectorAll('.task_ch');
+        const blockToMoves = document.querySelectorAll('.task_div');
+        const destination = document.querySelector('.deleted_tasks');
+
+        moveCheckboxes.forEach((checkbox, index) => {
+            checkbox.addEventListener('change', function () {
+                if (this.checked) {
+                    destination.appendChild(blockToMoves[index]);
+                } else {
+                    document.querySelector('.source').appendChild(blockToMoves[index]);
+                }
+            });
+        });
+    });
+</script>
+
+
+<div id="completed_tasks" style="margin-left: 5px">Виконано</div>
+<div class="deleted_tasks">
+    @foreach (var num in deleted_list)
+    {
+        <div class="task_div" id="task_div_@num">
+            <input value="@num.Id" hidden>
+            <input type="checkbox" class="task_ch" id="done_@num.Id" onclick="checkTask(@num.Id, 2)" checked />
+            <input type="type" name="name" value="@num.Name" class="task" id="text_@num.Id" readonly disabled style="text-decoration:line-through" />
+        </div>
+    }
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.4/jquery.validate.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script> 

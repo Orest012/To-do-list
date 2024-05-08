@@ -1,0 +1,277 @@
+﻿table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+body {
+    background-color: #DCDCDC;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+
+
+.task, .task_ch {
+    display: inline-block; /* або inline */
+    border: none;
+    position: relative;
+    top: 10px;
+    background-color: white;
+}
+
+.task_ch {
+    margin-left: 20px;
+}
+
+
+    .sidebar-content {
+        float: left;
+        width: 200px; /* Задайте ширину вашої бічної панелі */
+    }
+
+/* Додаткові стилі для контейнера змісту (для прикладу) */
+.main-content {
+    margin-left: 220px; /* Щоб вміст починався після бічної панелі */
+}
+
+.add_task_link {
+    color: blue;
+    text-decoration: none;
+    display: inline-block; /* або inline */
+    border: none;
+    position: relative;
+    top: 10px;
+    background-color: white;
+}
+
+.add_task_link:hover {
+    color: black;
+}
+
+.add_task_div {
+    background-color: white;
+    width: 95%;
+    height: 50px;
+    margin: 5px;
+    border-radius: 4px;
+}
+
+img {
+    width: 20px;
+    height: 20px;
+}
+
+
+
+
+
+.Model_window {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    backdrop-filter: blur(5px);
+    padding: 20px;
+    border-radius: 10px;
+    border: solid 1px black;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Тінь */
+    z-index: 9998;
+    animation: fadeIn 0.5s ease;
+    width: 60%;
+}
+
+.Model_window input[type=text], input[type=number], select {
+    width: 90%;
+    height: 40px;
+    padding-left: 10px;
+    padding-bottom: 5px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+    .Model_window form {
+        margin-left: 20px;
+    }
+
+    .Model_window span {
+        color: red;
+    }
+
+#select_date {
+    background-size: cover;
+    width: 20px;
+    height: 20px;
+    border: none;
+    cursor: pointer;
+/*    text-indent: -9999px;
+*/}
+
+.important_task {
+    background-image: url('/icons/yellow_star.png');
+    background-size: cover;
+    width: 20px;
+    height: 20px;
+    border: none;
+    cursor: pointer;
+    text-indent: -9999px;
+    /*    position: relative;
+*/ top: 20%;
+    left: 78%;
+}
+
+.RemoveButton {
+    background-image: url('icons/remove.png');
+    background-size: cover;
+    width: 40px;
+    height: 40px;
+    border: none;
+    cursor: pointer;
+    text-indent: -9999px;
+}
+
+.RemoveButtonEdit {
+    background-image: url('icons/remove.png');
+    background-size: cover;
+    width: 40px;
+    height: 40px;
+    border: none;
+    cursor: pointer;
+    text-indent: -9999px;
+    position: relative;
+    left: 80%;
+}
+
+
+.OpenSchedule {
+    background-image: url('icons/calendar.png');
+    background-size: cover;
+    width: 40px;
+    height: 40px;
+    border: none;
+    cursor: pointer;
+    text-indent: -9999px;
+}
+
+.mark_task {
+    background-image: url("/icons/white_star.png");
+    background-size: cover;
+    width: 20px;
+    height: 20px;
+    border: none;
+    cursor: pointer;
+    text-indent: -9999px;
+    /*    position: relative;
+*/ top: 20%;
+    left: 78%;
+}
+
+.task_div_header {
+    background: white;
+    height: 50px;
+    margin: 5px;
+    border-radius: 4px;
+    width: 95%;
+    display: flex;
+    margin-right: 20px;
+}
+
+.task_div_header p {
+    margin-left: 5%;
+    margin-right:20%;
+}
+
+.task_div {
+    background: white;
+    height: 50px;
+    margin: 5px;
+    border-radius: 4px;
+    width: 95%;
+}
+
+#date {
+    margin-left: 14%;
+    display: inline-block; /* або inline */
+    border: none;
+    position: relative;
+    top: 10px;
+    background-color: white;
+}
+
+.task_div button {
+    margin-left: 17%;
+}
+
+.edit_task_div {
+/*    background: white;*/    
+    height: 50px;
+    margin: 5px;
+    border-radius: 4px;
+    width: 95%;
+}
+
+
+.schedule {
+    /*    border: solid 2px black; */
+    background-color: #DCDCDC;
+    background-color: white;
+    position: fixed;
+    left: 75%;
+    width: 30%;
+    height: 90%;
+    overflow: auto;
+    box-shadow: -5px 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.EditWindow {
+   /*    border: solid 2px black;
+*/ background-color: #DCDCDC;
+    position: fixed;
+    left: 75%;
+    width: 25%;
+    height: 90%;
+    overflow: auto;
+    box-shadow: -5px 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.EditWindow label {
+    display: block;
+}
+
+.EditWindow input, select {
+    width: 95%;
+    height: 80%;
+    border-radius: 10px;
+}
+
+#EditButton button {
+    border-radius: 10px;
+    height: 50%;
+    width: 40%;
+    margin-right: 30px;
+    margin-top: 15px;
+    background-color: #4682B4;
+}
+
+.task_list {
+    background-color: papayawhip;
+    border-radius: 10px;
+    border: solid black 2px;
+    width: 80%;
+}
+
+.task_list > .task_div {
+    background: red;
+    border: solid black 2px;
+    
+}

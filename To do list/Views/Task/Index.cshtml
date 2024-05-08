@@ -1,0 +1,319 @@
+﻿@using Models.Enum
+@using Models.MyModels
+@using Services
+@model IEnumerable<Models.MyModels.MyTask>
+
+@{
+    List<MyTask> remain_list = new List<MyTask>();
+    List<MyTask> deleted_list = new List<MyTask>();
+    List<MyTask> Schedule = new List<MyTask>();
+    string[] types = (string[])Enum.GetNames(typeof(TaskTypes));
+
+
+    foreach (var num in Model)
+    {
+        if (num.IsCompleted == true)
+        {
+            deleted_list.Add(num);    
+        }
+
+        if (num.IsCompleted == false)
+        {
+            remain_list.Add(num);
+        }
+    }
+
+    if (ViewBag.TypePage == "MyDay")
+    {
+        foreach (var num in ViewBag.Schedule)
+        {
+            Schedule.Add(num);
+        }
+        foreach (var num in remain_list)
+        {
+            Schedule.Remove(num);
+        }
+    }
+
+    string action = "";
+    if (ViewBag.TypePage == "Index")
+    {
+        action = "AddTask";
+    }
+    else
+    {
+        action = "AddTaskToMyDay";
+    }
+    DateTime repeat = new DateTime(); 
+    MyTask myTask = new MyTask();
+
+}
+
+@if (@ViewBag.TypePage == "MyDay")
+{
+    <div class="schedule">
+        <div style="display: flex; align-items: center;">
+            <h1 style="margin-right: 25%;">Schedule</h1>
+            <button class="RemoveButton" onclick="CloseSchedule()">Close</button>
+        </div>
+
+        <div>
+            @foreach (var num in Schedule)
+            {
+                if (num.IsCompleted == false){
+                    <div class="task_list">
+                        @if (repeat != num.dateTime)
+                        {
+                            <p>@num.dateTime.ToString("dd.MM.yyyy")</p>
+                        }
+                        @{
+                        repeat = num.dateTime;
+                        }
+                        dskdas
+                        <div class="task_div" id="task_div_@num" >
+                        
+                            <input value="@num.Id" hidden>
+                            <input type="checkbox" class="task_ch" id="done_@num.Id" onclick="checkTask(@num.Id, @ViewBag.TypeCheck,  'AddToDay')" checked />
+                            <input type="type" name="name" value="@num.Name" class="task" id="text_@num.Id" readonly disabled  />
+                    
+                            @if (num.Type != "important")
+                            {
+                                <button class="mark_task" id="mark_@num.Id" onclick="MarkTask(@num.Id, @ViewBag.TypeCheck) disabled"> Select task </button>
+                            }
+                            @if (num.Type == "important")
+                            {
+                                <button class="important_task" id="mark_@num.Id" onclick="MarkTask(@num.Id, @ViewBag.TypeCheck) disabled"> Select task </button>
+                            }
+                        </div>
+                    </div>
+
+                }
+            }
+        </div>
+    </div>
+}
+
+<div class="EditWindow" style="display:none">
+    <div class="edit_task_div">
+        <input type="text" style="border: none;" id="edit_task_id" hidden/>
+
+        <button class="RemoveButtonEdit" onclick="CloseEdit()">Close</button>
+
+        <label>Task name</label>
+        <input type="text" value="slslsl" style="border: none;" id="edit_task_name" />
+        <br>
+
+
+        <label>Description</label>
+        <input type="text" value="my description" style="border: none;" id="edit_task_description" />
+
+        <label>Type</label>
+        <select id="edit_task_type">
+            @foreach (var num in types)
+            {
+                <option>@num</option>
+            }
+        </select>
+
+        <lable>Must be done before</lable>
+        <br></br>
+        <input type="date" id="edit_task_date" />
+        <div id="EditButton">        
+            <button type="submit" onclick="SendNewData()">Edit</button>
+            <button type="button">Cancel</button>
+        </div>
+
+    </div>
+</div>
+
+<div style=" display: flex; align-items: center;">
+    <h1>@ViewBag.TypePage</h1>
+    @if (@ViewBag.TypePage == "MyDay")
+    {
+        <button class="OpenSchedule" onclick="OpenSchedule()"> </button>
+    }
+
+
+</div>
+
+<div id ="Window_for_add" class="Model_window" hidden>
+    
+    <form method="post" asp-action="@action" asp-controller="Task">
+        <div>
+            <label asp-for="@myTask.Name">Name of task</label>
+            <span asp-validation-for="@myTask.Name" id="error_name"></span>
+            <div>
+                <input type="text" asp-for="@myTask.Name" />
+            </div>
+        </div>
+
+        <div>
+            <label asp-for="@myTask.Description">Description</label>
+            <span asp-validation-for="@myTask.Description" id="error_description"></span>
+            <div>
+                <input type="text" asp-for="@myTask.Description" value=""  />
+            </div>
+        </div>
+
+
+        <div>
+            <label asp-for="@myTask.Type">Type</label>
+            <span asp-validation-for="@myTask.Type" id="error_type"> </span>
+            <div>
+                <select asp-for="@myTask.Type">
+                    @foreach (var num in types)
+                    {
+                        <option value="@num" name="type">@num</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        @* <div>
+            <label asp-for="@myTask.Priority">Priority</label>
+            <span asp-validation-for="@myTask.Priority" id="error_priority"></span>
+            <div>
+                <input type="number" asp-for="@myTask.Priority" value="" />
+            </div>
+        </div> *@
+
+        <div>
+            <button type="submit">Add</button>
+            <button type="button" onclick="Cancel()">Cancel</button>
+        </div>
+    </form>
+</div>
+
+ <div class="add_task_div">
+    <a class="add_task_link" onclick="AddTask(); return false;"><img src="~/icons/add.png" alt="Plus" />Додати завдання</a>
+    @if (@ViewBag.TypePage == "MyDay")
+    {
+        <button onclick="open_select_date(); return false;">Вибрати дату</button>
+    }
+</div> 
+
+<div class="Model_window" id="date_window" hidden>
+    <form method="post" asp-action="MyDay" asp-controller="Task">
+        <input name="date_time" type="date">
+        <button type="submit">Ok</button>
+        <button type="button" onclick="Cancel_date()">Cancel</button>
+    </form>
+</div>
+
+<div id="remain_tasks" style="margin-left: 5px">Потрібно виконати</div>
+<div class="task_div_header">
+    <p>Name</p>
+    <p>Deadline</p>
+    <p>Importance</p>
+</div>
+
+<div class="source">
+    @foreach (var num in remain_list)
+    {
+        if (@ViewBag.TypePage == "PlanTasks")
+        {
+            repeat = DateTime.MinValue;
+            if (repeat != num.dateTime)
+            {
+                <p>@num.dateTime</p>
+            }
+ 
+        }
+        <div class="task_div" id="task_div_@num">
+            <input value="@num.Id" hidden>
+            <input type="checkbox" class="task_ch" id="done_@num.Id" onclick="checkTask(@num.Id, @ViewBag.TypeCheck)"/>
+            <input type="type" name="name" value="@num.Name" class="task" id="text_@num.Id" onclick="OpenEdit(@num.Id)" readonly  />
+            <input id="date" value="@num.dateTime.ToString("dd.MM.yyyy")" readonly disabled />
+            @if (num.Type != "important")
+            {
+                <button class="mark_task" id="mark_@num.Id" onclick="MarkTask(@num.Id, @ViewBag.TypeCheck)">  Select task </button>
+            }
+            @if (num.Type == "important"){
+                <button class="important_task" id="mark_@num.Id" onclick="MarkTask(@num.Id, @ViewBag.TypeCheck)">  Select task </button>
+            }
+        </div>
+       
+        
+    }
+</div>
+
+<script>
+    function open_select_date() {
+        console.log("1!!");
+        let open = document.getElementById("date_window");
+        open.style.display = "block";
+        console.log("222");
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const moveCheckboxes = document.querySelectorAll('.task_ch');
+        const blockToMoves = document.querySelectorAll('.task_div');
+        const destination = document.querySelector('.deleted_tasks');
+
+        moveCheckboxes.forEach((checkbox, index) => {
+            checkbox.addEventListener('change', function () {
+                if (this.checked) {
+                    console.log("Test !!!");
+
+                    destination.appendChild(blockToMoves[index]);
+                } else {
+                    // Отримуємо всі елементи .task_list
+                    var taskLists = document.querySelectorAll('.task_list');
+
+                    // Перевіряємо кожен елемент .task_list
+                    taskLists.forEach(function (taskList) {
+                        // Отримуємо всі елементи .task_div у поточному блоку .task_list
+                        var taskDivs = taskList.querySelectorAll('.task_div');
+
+                        // Якщо немає жодного елемента .task_div
+                        if (taskDivs.length === 0) {
+                            var dateTimeParagraphs = taskList.querySelectorAll('p');
+
+                            dateTimeParagraphs.forEach(function (dateTimeParagraph) {
+                                dateTimeParagraph.remove();
+                            });
+                        }
+                    });
+
+                    document.querySelector('.source').appendChild(blockToMoves[index]);
+                }
+            });
+        });
+    });
+
+    
+</script>
+
+
+<div id="completed_tasks" style="margin-left: 5px">Виконано</div>
+<div class="deleted_tasks">
+    @foreach (var num in deleted_list)
+    {
+        <div class="task_div" id="task_div_@num">
+            <input value="@num.Id" hidden>
+
+            <input type="checkbox" class="task_ch" id="done_@num.Id" onclick="checkTask(@num.Id, @ViewBag.TypeCheck)" checked />
+            <input type="type" name="name" value="@num.Name" class="task" id="text_@num.Id" readonly disabled style="text-decoration:line-through" />
+            <input id="date" value="@num.dateTime.ToString("dd.MM.yyyy")" readonly disabled />
+
+@*             <button class="mark_task" id="mark_@num.Id" onclick="MarkTask(@num.Id, @ViewBag.TypeCheck)">Select task</button>
+ *@
+
+            @if (num.Type != "important")
+            {
+                <button class="mark_task" id="mark_@num.Id" onclick="MarkTask(@num.Id, @ViewBag.TypeCheck)" >  Select task </button>
+            }
+            @if (num.Type == "important")
+            {
+                <button class="important_task" id="mark_@num.Id" onclick="MarkTask(@num.Id, @ViewBag.TypeCheck)">  Select task </button>
+            }
+
+        </div>
+    }
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.4/jquery.validate.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script> 
